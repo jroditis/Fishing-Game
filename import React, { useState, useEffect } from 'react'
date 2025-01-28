@@ -1,0 +1,86 @@
+import React, { useState, useEffect } from 'react';
+
+const FishingGame = () => {
+  const [showCatch, setShowCatch] = useState(false);
+  const [catchCount, setCatchCount] = useState(0);
+
+  const handleClick = () => {
+    if (!showCatch) {
+      setShowCatch(true);
+      setCatchCount(prev => prev + 1);
+    } else {
+      // End animation early if clicked during catch
+      setShowCatch(false);
+    }
+  };
+
+  useEffect(() => {
+    let timeoutId;
+    if (showCatch) {
+      timeoutId = setTimeout(() => {
+        setShowCatch(false);
+      }, 5000);
+    }
+    // Cleanup timeout if component unmounts or animation is cancelled
+    return () => clearTimeout(timeoutId);
+  }, [showCatch]);
+
+  return (
+    <div className="relative w-full h-96 bg-white">
+      {/* Catch Counter */}
+      <div className="absolute top-4 right-4 bg-blue-100 px-4 py-2 rounded-lg shadow-md">
+        <span className="font-bold">Catches: {catchCount}</span>
+      </div>
+
+      {/* Fishing Scene */}
+      <div className="absolute inset-0">
+        {/* Fishing Rod */}
+        <div className="absolute top-4 left-1/4">
+          <div className="w-32 h-2 bg-teal-500 rotate-12 origin-left" />
+          <div className="absolute top-0 left-28">
+            <div className="w-px h-20 bg-gray-400 origin-top" /> {/* Line */}
+            <div className="w-2 h-2 -rotate-45 text-gray-600">⚡</div> {/* Hook */}
+          </div>
+        </div>
+        
+        {/* Water */}
+        <div 
+          className="absolute bottom-0 w-full h-3/4 bg-blue-200 cursor-pointer"
+          onClick={handleClick}
+        />
+      </div>
+
+      {/* Catch Animation */}
+      {showCatch && (
+        <div 
+          className="absolute inset-0 flex flex-col items-center justify-center bg-white bg-opacity-90 transition-opacity duration-500 cursor-pointer"
+          onClick={handleClick}
+        >
+          <div className="text-3xl font-bold mb-4 animate-bounce">
+            New Catch!
+          </div>
+          <div className="w-32 h-32 animate-pulse">
+            {/* Fish SVG */}
+            <svg viewBox="0 0 100 100" className="w-full h-full">
+              <path
+                d="M10,50 Q30,35 50,50 T90,50 L80,65 Q50,80 20,65 L10,50"
+                fill="#ff6b6b"
+                stroke="#000"
+                strokeWidth="2"
+              />
+              <circle cx="75" cy="45" r="3" fill="#000" /> {/* Eye */}
+              <path
+                d="M85,50 L95,45 L95,55 L85,50"
+                fill="#ff6b6b"
+                stroke="#000"
+                strokeWidth="2"
+              /> {/* Tail */}
+            </svg>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default FishingGame;
